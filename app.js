@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const createError = require("http-errors");
 const bodyParser = require("body-parser");
+const cors = require('cors');
 require("dotenv").config();
 
 const AuthRoute = require("./routes/auth.route");
@@ -10,7 +11,14 @@ const { sendErrorResponse } = require("./helpers/response");
 
 const app = express();
 
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());//used to get request data(payload) from react
 //app.use(bodyParser.json());
 
 
@@ -45,7 +53,7 @@ app.use((err, req, res, next) => {
  return sendErrorResponse(res, err.message, statusCode);
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 app.listen(port, () => {
  console.log(`Server running on port ${port}`);
 });

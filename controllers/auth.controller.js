@@ -9,7 +9,7 @@ const {
    } = require("../helpers/jwt-helper");
 const {User} = require("../models");
    
-const register = async (req, res, next) => {
+const signUp = async (req, res, next) => {
     try {
         const data = await authSchema.validateAsync(req.body);
    
@@ -31,12 +31,15 @@ const register = async (req, res, next) => {
    
         const accessToken = await signAccessToken(saveUser.id.toString());
         const refreshToken = await signRefreshToken(saveUser.id.toString());
-   
+        const userData = {id: user.id, name: user.name, email: user.email};
+
         const dataArray = {};
    
         //dataArray.data = saveUser;
         dataArray.accessToken = accessToken;
         dataArray.refreshToken = refreshToken;
+        dataArray.user = userData;
+        
         return sendSuccessResponse(res, "User inserted successfully", dataArray);
       } catch (error) {
         if (error.isJoi === true) {
@@ -63,14 +66,23 @@ const register = async (req, res, next) => {
    
         if (!isMatch)
           throw createError.Unauthorized("Usermame and Password Invalid");
-   
+
         const accessToken = await signAccessToken(user.id.toString());
         const refreshToken = await signRefreshToken(user.id.toString());
-   
+        const userData = {id: user.id, name: user.name, email: user.email};
+
         const dataArray = {};
         dataArray.accessToken = accessToken;
         dataArray.refreshToken = refreshToken;
-   
+        dataArray.user = userData;
+
+        /*res.cookie("accessToken", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+          sameSite: "Strict",
+          maxAge: 24 * 60 * 60 * 1000, // 1 day
+        });*/
+
         return sendSuccessResponse(res, "Login successfully", dataArray);
       } catch (error) {
         //next(error);
@@ -107,4 +119,4 @@ const register = async (req, res, next) => {
  
  
  
-  module.exports = {register, login, refreshToken}
+  module.exports = {signUp, login, refreshToken}

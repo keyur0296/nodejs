@@ -12,7 +12,6 @@ const authSchema = Joi.object({
    .label("confirm password"),
 });
 
-
 const loginSchema = Joi.object({
   email: Joi.string().email().lowercase().required(),
   password: Joi.string().required().min(8),
